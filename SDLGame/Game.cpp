@@ -63,6 +63,8 @@ void Game::RunLoop()
 	while (mIsRunning) {
 		ProcessInput();
 
+		UpdateGame();
+
 		GeneratOutput();
 	}
 }
@@ -86,12 +88,87 @@ void Game::ProcessInput()
 		mIsRunning = false;
 	}
 
+	mPaddleDir = 0;
+	if (state[SDL_SCANCODE_W]) 
+	{
+		mPaddleDir = -1;
+	}
+	if (state[SDL_SCANCODE_S])
+	{
+		mPaddleDir = 1;
+	}
 	
 
 }
 
 void Game::UpdateGame()
 {
+	//프레임고정
+	while (!SDL_TICKS_PASSED(SDL_GetTicks(), mTicksCount + 16))
+	{
+
+	}
+
+	float deltaTime = ((SDL_GetTicks() - mTicksCount) / 1000.f);
+
+	if (deltaTime > 0.05f)
+	{
+		deltaTime = 0.05f;
+	}
+
+	mTicksCount = SDL_GetTicks();
+
+	//패들 움직임
+	if (mPaddleDir != 0)
+	{
+		mPaddlePos.y += mPaddleDir * 300.f * deltaTime;
+		if (mPaddlePos.y < paddleH / 2.0f + thickness)
+		{
+			mPaddlePos.y = paddleH / 2.0f + thickness;
+		}
+		else if (mPaddlePos.y > 768.0f - paddleH / 2.0f - thickness)
+		{
+			mPaddlePos.y = 768.0f -paddleH / 2.0f - thickness;
+		}
+	}
+
+	//볼처리 계속움직임
+
+	mBallPos.x += mBallVel.x * deltaTime;
+	mBallPos.y += mBallVel.y * deltaTime;
+
+	float diff = mPaddlePos.y - mBallPos.y;
+	diff = (diff > 0.0f) ? diff : -diff;
+	if (
+		diff <= paddleH / 2.f && mBallPos.x <= 25.f && mBallPos.x >= 20.f &&
+		mBallVel.x < 0.f)
+	{
+		mBallVel.x *= -1.f;
+	}
+	// Did the ball go off the screen? (if so, end game)
+	else if (mBallPos.x <= 0.0f)
+	{
+		mIsRunning = false;
+	}
+	// Did the ball collide with the right wall?
+	else if (mBallPos.x >= (1024.0f - thickness) && mBallVel.x > 0.0f)
+	{
+		mBallVel.x *= -1.0f;
+	}
+
+	// Did the ball collide with the top wall?
+	if (mBallPos.y <= thickness && mBallVel.y < 0.0f)
+	{
+		mBallVel.y *= -1;
+	}
+	// Did the ball collide with the bottom wall?
+	else if (mBallPos.y >= (768 - thickness) &&
+		mBallVel.y > 0.0f)
+	{
+		mBallVel.y *= -1;
+	}
+	
+
 }
 
 void Game::GeneratOutput()
