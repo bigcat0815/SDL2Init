@@ -27,10 +27,7 @@ private:
 	SDL_Window* mWindow;
 	SDL_Renderer* mRenderer;
 
-	
-	
 	bool mIsRunning;
-
 
 	int mPaddleDir;
 	// Position of paddle

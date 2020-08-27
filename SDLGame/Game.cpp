@@ -3,13 +3,18 @@
 const int thickness = 15;
 const float paddleH = 100.0f;
 
-Game::Game():
+Game::Game() :
 	mWindow(nullptr),
 	mIsRunning(true),
 	mRenderer(nullptr),
 	mPaddleDir(0), mTicksCount(0)
 {
-
+	mBallPos.x = 0;
+	mBallPos.y = 0;
+	mBallVel.x = 0;
+	mBallVel.y = 0;
+	mPaddlePos.x = 0;
+	mPaddlePos.y = 0;
 }
 
 bool Game::Initialize()
@@ -109,7 +114,7 @@ void Game::UpdateGame()
 
 	}
 
-	float deltaTime = ((SDL_GetTicks() - mTicksCount) / 1000.f);
+	float deltaTime = ((SDL_GetTicks() - mTicksCount) / 1500.f);
 
 	if (deltaTime > 0.05f)
 	{
@@ -121,7 +126,7 @@ void Game::UpdateGame()
 	//패들 움직임
 	if (mPaddleDir != 0)
 	{
-		mPaddlePos.y += mPaddleDir * 300.f * deltaTime;
+		mPaddlePos.y += mPaddleDir * 200.f * deltaTime;
 		if (mPaddlePos.y < paddleH / 2.0f + thickness)
 		{
 			mPaddlePos.y = paddleH / 2.0f + thickness;
